@@ -7,6 +7,7 @@ import corn.jamboy.constants.ResultConstants;
 import corn.jamboy.entity.WhitelistIp;
 import corn.jamboy.entity.WhitelistIpGroup;
 import corn.jamboy.protocol.ResultBean;
+import corn.jamboy.service.WhitelistIpGroupService;
 import corn.jamboy.service.impl.WhitelistIpGroupServiceImp;
 import corn.jamboy.service.impl.WhitelistIpServiceImp;
 
@@ -41,6 +42,9 @@ public class WhitelistIpGroupController {
 	@Autowired
 	private WhitelistIpGroupServiceImp whitelistIpGroupService;
  
+	@Autowired
+	private WhitelistIpServiceImp WhitelistIpService;
+	
 	/*
 	 * 创建白名单分组 verify
 	 */
@@ -138,6 +142,20 @@ public class WhitelistIpGroupController {
 				throw new RuntimeException("ID: "+whitelistIpGroup.getId() + " 不存在");
 			}
 			whitelistIpGroupService.modifyEntity(whitelistIpGroup);
+			
+			//更新分组下所有白名单状态
+			int status = whitelistIpGroup.getStatus();
+			
+			List<WhitelistIp> whiteList = WhitelistIpService.getAll();
+
+			
+			for(WhitelistIp wl : whiteList){
+				if(wl.getWhitelistIpGroup().getId() == whitelistIpGroup.getId()){
+					wl.setStatus(status);
+					WhitelistIpService.modifyEntity(wl);
+				}
+			}
+			
 			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE); 
 			
 		} catch (Exception e) {
@@ -149,8 +167,8 @@ public class WhitelistIpGroupController {
 	/*
 	 * 查询分组下白名单 verify
 	 */
-	@RequestMapping(value="/{whitelist_id_group}",method=RequestMethod.GET)
-	public String searchList(@PathVariable(name = "whitelist_id_group") Integer id){
+	@RequestMapping(value="/{id}",method=RequestMethod.GET)
+	public String searchList(@PathVariable(name = "id") Integer id){
 		logger.info("查询白名单分组 ID:"+id);
 		try {
 			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(id);

@@ -101,9 +101,9 @@ public class WhitelistIpController {
 		
 	}
 	
-	/*
+/*	
 	 * 查询白名单
-	 */
+	 
 	@RequestMapping(value="/{id}",method=RequestMethod.GET)
 	public ResultBean<WhitelistIp> searchList(@PathVariable int id){
 		logger.info("查询白名单 ID:"+id);
@@ -120,7 +120,7 @@ public class WhitelistIpController {
 		}
 	}
 	
-/*	
+	
 	 * 编辑白名单状态
 	 
 	@RequestMapping(value="/edit_status?id={id}&status={status}",method=RequestMethod.PUT)
