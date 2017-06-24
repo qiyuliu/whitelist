@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import corn.jamboy.constants.ResultConstants;
 import corn.jamboy.entity.WhitelistIp;
+import corn.jamboy.entity.WhitelistIpGroup;
+import corn.jamboy.form.UpdateIpForm;
+import corn.jamboy.form.WhitelistIpForm;
 import corn.jamboy.protocol.ResultBean;
 import corn.jamboy.service.impl.WhitelistIpGroupServiceImp;
 import corn.jamboy.service.impl.WhitelistIpServiceImp;
@@ -25,7 +28,7 @@ import corn.jamboy.service.impl.WhitelistIpServiceImp;
  * 
  */
 @RestController
-@RequestMapping(value="/admin_v1/white_ip")
+@RequestMapping(value="/admin/v1/whitelist/ip")
 public class WhitelistIpController {
 	
 	
@@ -40,17 +43,34 @@ public class WhitelistIpController {
 	@Autowired
 	private WhitelistIpServiceImp whitelistIpService; 
 	
+	@Autowired
+	private WhitelistIpGroupServiceImp whitelistIpGroupService;
+	
+	
 	/*
 	 * 创建白名单 verify
 	 * 
 	 */
 	@RequestMapping(value="/",method=RequestMethod.POST)
-	public ResultBean<Void> createList(@RequestBody WhitelistIp whitelistIp){	
-		logger.info("创建白名单 ID:"+whitelistIp.getId());
+	public ResultBean<Void> createList(@RequestBody WhitelistIpForm form){	
+		logger.info("创建白名单 ID:"+form.getGroupId());
 		try {
+
+			
+			WhitelistIp whitelistIp = new WhitelistIp();			
+			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(Integer.parseInt(form.getGroupId()));
+			if(whitelistIpGroup == null){
+				throw new RuntimeException("分组不存在");
+			}
+			
+			whitelistIp.setStartIp(form.getStauts());
+			whitelistIp.setEndIp(form.getEndIp());
+			whitelistIp.setWhitelistIpGroup(whitelistIpGroup);
 			whitelistIp.setUpdateAt(new Date());
+			whitelistIp.setRemark(form.getRemark());
+			whitelistIp.setStatus(Integer.valueOf(form.getStauts()));
 			whitelistIpService.saveEntity(whitelistIp);
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE); 
+			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成创建"); 
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		} 
@@ -71,7 +91,7 @@ public class WhitelistIpController {
 			}else{
 				whitelistIpService.removeEntity(whitelistIp);
 			}
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE); 
+			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成删除"); 
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
@@ -84,16 +104,28 @@ public class WhitelistIpController {
 	 * 更新白名单 verify
 	 */
 	@RequestMapping(value="/",method=RequestMethod.PUT)
-	public ResultBean<Void> updateList(@RequestBody WhitelistIp whitelistIp){
-		logger.info("更新白名单 ID:"+whitelistIp.getId());
+	public ResultBean<Void> updateList(@RequestBody UpdateIpForm updateIpForm){
+		logger.info("更新白名单 ID:"+updateIpForm.getId());
 		try {
-			if(whitelistIpService.getEntity(whitelistIp.getId()) == null){
-				throw new RuntimeException("ID: "+whitelistIp.getId() + " 不存在");
+			if(whitelistIpService.getEntity(Integer.parseInt(updateIpForm.getId())) == null){
+				throw new RuntimeException("ID: "+updateIpForm.getId() + " 不存在");
 			}
+			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(Integer.parseInt(updateIpForm.getGroupId()));
+			if(whitelistIpGroup == null){
+				throw new RuntimeException("分组：" + whitelistIpGroup + "不存在");
+			}
+			
+			WhitelistIp whitelistIp = new WhitelistIp();
+			whitelistIp.setId(Integer.parseInt(updateIpForm.getId()));
+			whitelistIp.setStatus(Integer.parseInt(updateIpForm.getStauts()));
+			whitelistIp.setStartIp(updateIpForm.getStartIp());
+			whitelistIp.setEndIp(updateIpForm.getEndIp());
+			whitelistIp.setWhitelistIpGroup(whitelistIpGroup);
 			whitelistIp.setUpdateAt(new Date());
+			whitelistIp.setRemark(updateIpForm.getRemark());
 			whitelistIpService.modifyEntity(whitelistIp);
 			
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE); 
+			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成更新"); 
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
