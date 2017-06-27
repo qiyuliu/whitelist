@@ -36,7 +36,43 @@
 API
 ------
 
-#### 创建白名单分组:`/admin/v1/whitelist/group/
+#### 白名单验证:`/admin/v1/whitelist/verify`
+
+对白名单进行验证
+
+请求
+
+```shell
+
+curl -X POST \
+
+http://${admin_api_url}/admin/v1/whitelist/verify/?areaId=&accountId=&clientIp=
+
+
+```
+* areaId：区服ID
+* accountId:账户ID
+* clientIp:客户端IP
+
+响应
+
+```shell
+{
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "白名单IP验证成功"
+  }
+}
+```
+* code:消息码.成功返回1，失败返回0.
+* obj：验证信息
+* result：验证结果.验证成功返回true，失败返回false.
+* reason：验证结果详细说明
+
+
+
+#### 创建白名单分组:`/admin/v1/whitelist/group/create`
 
 创建一个新的白名单分组
 
@@ -46,7 +82,7 @@ API
 
 curl -X POST \
 
-http://${admin_api_url}/admin/v1/whitelist/group/?name=&stauts=
+http://${admin_api_url}/admin/v1/whitelist/group/create?name=&status=
 
 
 ```
@@ -90,7 +126,7 @@ curl -X GET \
 ```
 
 
-#### 查询所有白名单分组:`/admin/v1/whitelist/group/{id}`
+#### 查询所有白名单分组:`/admin/v1/whitelist/group/`
 
 查询所有白名单分组
 
@@ -100,7 +136,7 @@ curl -X GET \
 
 curl -X GET \
 
-  http://${admin_api_url}/admin/v1/whitelist/group/{id}/  
+  http://${admin_api_url}/admin/v1/whitelist/group/
 
 
 ```

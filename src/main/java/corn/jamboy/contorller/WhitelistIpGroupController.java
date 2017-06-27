@@ -54,7 +54,7 @@ public class WhitelistIpGroupController {
 	 * 创建白名单分组
 	 */
 	@RequestMapping(value="/create",method=RequestMethod.POST)
-	public ResultBean<Void> createList(@RequestParam(name = "name") String name,
+	public ResultBean createList(@RequestParam(name = "name") String name,
 			@RequestParam(name = "status") Integer status){
 
 		logger.info("创建白名单分组: "+name);
@@ -67,7 +67,7 @@ public class WhitelistIpGroupController {
 			whitelistIpGroup.setUpdateAt(new Date());
 
 			whitelistIpGroupService.saveEntity(whitelistIpGroup);				
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成创建");
+			return new ResultBean("已完成创建",ResultConstants.SYS_NORMAL_CODE);
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		}

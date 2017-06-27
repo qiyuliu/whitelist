@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import corn.jamboy.entity.AreaInfo;
@@ -22,7 +23,7 @@ import corn.jamboy.service.impl.WhitelistIpServiceImp;
  *
  */
 @RestController
-@RequestMapping(value="/admin/v1/whitelist/verrify")
+@RequestMapping(value="/admin/v1/whitelist/verify")
 public class WhiteListVerifyController {
 
 	@RequestMapping("/test")
@@ -48,22 +49,22 @@ public class WhiteListVerifyController {
 	 *	group 是否 open
 	 *	ip 是否 open
 	 */
-	@RequestMapping(value="/",method=RequestMethod.POST)
-	public WhiteList.Response verify(@RequestBody WhiteList.Request req){
+	@RequestMapping(value="/",method=RequestMethod.GET)
+	public WhiteList.Response verify(@RequestParam(name="areaId") Integer areaId,
+			@RequestParam(name="accountId",required = false) String accountId,
+			@RequestParam(name="clientIp") String clientIp
+			){
 		
-		logger.info("whitelist verify ...Session");
-
+		logger.info("whitelist verify ...Session");	
 		
-		
-		
-		AreaInfo areaInfo = areaInfoServiceImp.getEntity(req.getAreaId());
+		AreaInfo areaInfo = areaInfoServiceImp.getEntity(areaId);
 		Boolean flag = areaInfo.getEnableWhite();
 		WhiteList.Response res = null;
 		
 		String start,end,ip;
-		//areaId 是否 open
+		//区服是否开启白名单
 		if(flag){
-			//获取IP分组
+			
 			List<WhitelistIpGroup> groupList = whitelistIpGroupService.getAll();
 			//获取全部IP
 			List<WhitelistIp> ipList = whitelistIpService.getAll();
@@ -72,7 +73,7 @@ public class WhiteListVerifyController {
 				//IP状态为开启
 				if(list.getStatus()==1){
 					//是否在开始IP和结束IP之间
-					if(Double.valueOf(start = list.getStartIp().replaceAll("\\.", "")) <= Double.valueOf(ip = req.getClientIp().replaceAll("\\.", "")) && Double.valueOf(ip = req.getClientIp().replaceAll("\\.", "")) <= Double.valueOf(end = list.getEndIp().replaceAll("\\.", ""))){
+					if(Double.valueOf(start = list.getStartIp().replaceAll("\\.", "")) <= Double.valueOf(ip = clientIp.replaceAll("\\.", "")) && Double.valueOf(ip = clientIp.replaceAll("\\.", "")) <= Double.valueOf(end = list.getEndIp().replaceAll("\\.", ""))){
 						
 						for(WhitelistIpGroup list2 : groupList){
 							//找出所在分组
@@ -89,28 +90,21 @@ public class WhiteListVerifyController {
 						}
 					}else{
 						res = new WhiteList.Response(0,new WhiteList.Response.Obj(false, "白名单IP验证失败：IP白名单不在开始IP和结束IP之间"));
-						
 					}
 				}else{
-					res = new WhiteList.Response(0,new WhiteList.Response.Obj(false, "白名单IP验证失败：IP白名单未开启"));	
-					
+					res = new WhiteList.Response(0,new WhiteList.Response.Obj(false, "白名单IP验证失败：IP白名单未开启"));		
 				}
-			}
-			
+			}		
 		}else {
 			res = new WhiteList.Response(0,new WhiteList.Response.Obj(false, "白名单IP验证失败：区服白名单未开启"));
 		}
-
-	
 		return res;
 	}
 	
 	
-
-
 	public static class WhiteList {
 		
-		public static class Request{
+/*		public static class Request{
 		
 			private Integer areaId;
 			private String accountId;
@@ -135,7 +129,7 @@ public class WhiteListVerifyController {
 			}
 			
 			
-		}
+		}*/
 		
 		public static class Response{
 			
