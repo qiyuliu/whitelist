@@ -124,6 +124,12 @@
 			<artifactId>spring-boot-admin-starter-client</artifactId>
 			<version>${boot.admin.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>springloaded</artifactId>
+			<version>1.2.5.RELEASE</version>
+</dependency>
 
 	</dependencies>
 

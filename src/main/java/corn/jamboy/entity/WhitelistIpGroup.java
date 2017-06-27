@@ -1,6 +1,7 @@
 package corn.jamboy.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class WhitelistIpGroup implements Serializable{
 	//分组ID
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	
 	//分组名
 	@Column(name="name",nullable=false,length=255)
@@ -36,19 +37,26 @@ public class WhitelistIpGroup implements Serializable{
 	
 	//启用状态默认0为未启用，1为启用
 	@Column(name="status",nullable=false,length=4)
-	private int status;
+	private Integer status;
 
-	//分组下拥有的IP
+/*	//分组下拥有的IP
 	//一对多
 	@OneToMany(mappedBy="whitelistIpGroup",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
-	private List<WhitelistIp> WhitelistIps = new LinkedList<WhitelistIp>();
-	
-	
-	public int getId() {
+	private List<WhitelistIp> WhitelistIps = new LinkedList<WhitelistIp>();*/
+
+	//分组创建时间
+	@Column(name="create_at",nullable = false,length = 0)
+	private Date createAt;
+
+	//分组更新时间
+	@Column(name = "update_at",nullable = false,length = 0)
+	private Date updateAt;
+
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -60,23 +68,30 @@ public class WhitelistIpGroup implements Serializable{
 		this.name = name;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
-	public List<WhitelistIp> getWhitelistIps() {
-		return WhitelistIps;
+
+	public Date getCreateAt() {
+		return createAt;
 	}
 
-	public void setWhitelistIps(List<WhitelistIp> whitelistIps) {
-		WhitelistIps = whitelistIps;
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
 	}
 
+	public Date getUpdateAt() {
+		return updateAt;
+	}
 
+	public void setUpdateAt(Date updateAt) {
+		this.updateAt = updateAt;
+	}
 	
 	
 }

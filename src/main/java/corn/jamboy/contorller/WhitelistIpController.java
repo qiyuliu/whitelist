@@ -1,6 +1,7 @@
 package corn.jamboy.contorller;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import corn.jamboy.constants.ResultConstants;
@@ -52,25 +54,38 @@ public class WhitelistIpController {
 	 * 
 	 */
 	@RequestMapping(value="/",method=RequestMethod.POST)
-	public ResultBean<Void> createList(@RequestBody WhitelistIpForm form){	
-		logger.info("创建白名单 ID:"+form.getGroupId());
+	public ResultBean<Void> createList(@RequestParam(name="groupId",required = false) Integer groupId,
+									@RequestParam(name="startIp") String startIp,
+									@RequestParam(name="endIp",required = false) String endIp,
+									@RequestParam(name="status") Integer status,
+									@RequestParam(name="remark") String remark			
+			){	
+		logger.info("创建白名单 ID");
 		try {
-
 			
 			WhitelistIp whitelistIp = new WhitelistIp();			
-			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(Integer.parseInt(form.getGroupId()));
-			if(whitelistIpGroup == null){
-				throw new RuntimeException("分组不存在");
+			
+			if(groupId == null){
+				whitelistIp.setGroupId(0);
+			}else {
+				whitelistIp.setGroupId(groupId);
+			}		
+			
+			whitelistIp.setStartIp(startIp);
+			//endIp(可选) - 为空时，和startId一致
+			if(endIp == null){
+				whitelistIp.setEndIp(startIp);
+			}else {
+				whitelistIp.setEndIp(endIp);
 			}
 			
-			whitelistIp.setStartIp(form.getStauts());
-			whitelistIp.setEndIp(form.getEndIp());
-			whitelistIp.setWhitelistIpGroup(whitelistIpGroup);
+			whitelistIp.setCreateAt(new Date());
 			whitelistIp.setUpdateAt(new Date());
-			whitelistIp.setRemark(form.getRemark());
-			whitelistIp.setStatus(Integer.valueOf(form.getStauts()));
+			whitelistIp.setStatus(status);
+			whitelistIp.setRemark(remark);
+			
 			whitelistIpService.saveEntity(whitelistIp);
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成创建"); 
+			return new ResultBean<>(ResultConstants.SYS_NORMAL_CODE,"已完成创建"); 
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		} 
@@ -79,8 +94,8 @@ public class WhitelistIpController {
 	/*
 	 * 删除白名单 verify
 	 */
-	@RequestMapping(value="/{whitelist_id}",method=RequestMethod.DELETE)
-	public ResultBean<Void> deleteList(@PathVariable(name = "whitelist_id") Integer id){
+	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
+	public ResultBean<Void> deleteList(@PathVariable(name = "id") Integer id){
 		logger.info("删除白名单 ID:"+id);
 		
 		try {
@@ -104,25 +119,35 @@ public class WhitelistIpController {
 	 * 更新白名单 verify
 	 */
 	@RequestMapping(value="/",method=RequestMethod.PUT)
-	public ResultBean<Void> updateList(@RequestBody UpdateIpForm updateIpForm){
-		logger.info("更新白名单 ID:"+updateIpForm.getId());
+	public ResultBean<Void> updateList(	@RequestParam(name = "id") Integer id,
+										@RequestParam(name = "startIp") String startIp,
+										@RequestParam(name = "status") Integer status,
+										@RequestParam(name = "endIp",required = false) String endIp,
+										@RequestParam(name = "groupId",required = false) Integer groupId,
+										@RequestParam(name = "remark") String remark
+			
+			){
+		logger.info("更新白名单 ID:"+id);
 		try {
-			if(whitelistIpService.getEntity(Integer.parseInt(updateIpForm.getId())) == null){
-				throw new RuntimeException("ID: "+updateIpForm.getId() + " 不存在");
-			}
-			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(Integer.parseInt(updateIpForm.getGroupId()));
-			if(whitelistIpGroup == null){
-				throw new RuntimeException("分组：" + whitelistIpGroup + "不存在");
+
+			WhitelistIp whitelistIp = whitelistIpService.getEntity(id);
+			
+			if(groupId == null){
+				whitelistIp.setGroupId(0);
+			}else {
+				whitelistIp.setGroupId(groupId);
+			}		
+			if(endIp == null){
+				whitelistIp.setEndIp("");
+			}else {
+				whitelistIp.setEndIp(endIp);
 			}
 			
-			WhitelistIp whitelistIp = new WhitelistIp();
-			whitelistIp.setId(Integer.parseInt(updateIpForm.getId()));
-			whitelistIp.setStatus(Integer.parseInt(updateIpForm.getStauts()));
-			whitelistIp.setStartIp(updateIpForm.getStartIp());
-			whitelistIp.setEndIp(updateIpForm.getEndIp());
-			whitelistIp.setWhitelistIpGroup(whitelistIpGroup);
+			whitelistIp.setStartIp(startIp);
+			whitelistIp.setStatus(status);
+			whitelistIp.setRemark(remark);
 			whitelistIp.setUpdateAt(new Date());
-			whitelistIp.setRemark(updateIpForm.getRemark());
+
 			whitelistIpService.modifyEntity(whitelistIp);
 			
 			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成更新"); 
@@ -133,35 +158,94 @@ public class WhitelistIpController {
 		
 	}
 	
-/*	
-	 * 查询白名单
-	 
-	@RequestMapping(value="/{id}",method=RequestMethod.GET)
-	public ResultBean<WhitelistIp> searchList(@PathVariable int id){
-		logger.info("查询白名单 ID:"+id);
+
+
+	/*
+	 * 查询所有白名单
+	 */
+	@RequestMapping(value="/all",method=RequestMethod.GET)
+	public String searchList(){
+		logger.info("查询所有白名单 ID");
 		try {
-			if(whitelistIpService.getEntity(id) == null){
-				throw new RuntimeException("ID: "+id + " 不存在");
-			}
-			WhitelistIp whitelistIp = whitelistIpService.getEntity(id);
+
+			List<WhitelistIp> ipList = whitelistIpService.getAll();
 			
-			return new ResultBean<WhitelistIp>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE); 
-			
+			WhitelistIp whitelistIp = null;
+			StringBuffer sb = new StringBuffer("[");
+			for(int i = 0; i < ipList.size(); i++)  
+	        { 
+				whitelistIp = ipList.get(i);   
+				if(i<ipList.size()-1){
+
+					
+					sb.append("{\"id\":\"");  
+					sb.append(whitelistIp.getId());
+					
+					sb.append("\",\"Group\":\"");  
+					sb.append(whitelistIp.getGroupId());
+
+					sb.append("\",\"startIp\":\"");  
+					sb.append(whitelistIp.getStartIp());
+					
+					sb.append("\",\"createAt\":\"");  
+					sb.append(whitelistIp.getCreateAt());
+					
+					sb.append("\",\"endIp\":\"");  
+					sb.append(whitelistIp.getStatus());
+					
+					sb.append("\",\"updateAt\":\"");  
+					sb.append(whitelistIp.getUpdateAt());
+					
+					sb.append("\",\"status\":\"");  
+					sb.append(whitelistIp.getStatus());
+					
+					sb.append("\",\"remark\":\"");  
+					sb.append(whitelistIp.getRemark());
+	                sb.append("\"");  
+	                sb.append("},"); 
+				}
+				
+                
+                if(i==ipList.size()-1){
+					sb.append("{\"id\":\"");  
+					sb.append(whitelistIp.getId());
+					
+					sb.append("\",\"Group\":\"");  
+					sb.append(whitelistIp.getGroupId());
+
+					sb.append("\",\"startIp\":\"");  
+					sb.append(whitelistIp.getStartIp());
+					
+					sb.append("\",\"createAt\":\"");  
+					sb.append(whitelistIp.getCreateAt());
+					
+					sb.append("\",\"endIp\":\"");  
+					sb.append(whitelistIp.getStatus());
+					
+					sb.append("\",\"updateAt\":\"");  
+					sb.append(whitelistIp.getUpdateAt());
+					
+					sb.append("\",\"status\":\"");  
+					sb.append(whitelistIp.getStatus());
+					
+					sb.append("\",\"remark\":\"");  
+					sb.append(whitelistIp.getRemark());
+	                sb.append("\"");  
+	                sb.append("}"); 
+                }
+	        } 
+			sb.append("]");
+			String str = sb.toString();
+
+
+			return str;
+
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		}
 	}
 	
 	
-	 * 编辑白名单状态
-	 
-	@RequestMapping(value="/edit_status?id={id}&status={status}",method=RequestMethod.PUT)
-	public ModelAndView updateStatus(@PathVariable int id,@PathVariable int status){
-		
-		logger.info("编辑白名单 ID:"+id + ",状态更改为：" + status);
-		
-		
-		return null;
-	}*/
+
 
 }

@@ -26,13 +26,14 @@ public class WhitelistIp implements Serializable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id",nullable=false,length=20)
-	private int id;
+	private Integer id;
 	
-	//所属白名单分组
+/*	//所属白名单分组
 	//多对一
 	@ManyToOne(cascade={CascadeType.MERGE,CascadeType.REFRESH},optional=false)
-	@JoinColumn(name="group_id")
-	private WhitelistIpGroup whitelistIpGroup;
+	@JoinColumn(name="group_id")*/
+	@Column(name="group_id",nullable=false,length=20)
+	private Integer groupId;
 	
 	//开始IP
 	@Column(name="start_ip",nullable=false,length=20)
@@ -41,36 +42,41 @@ public class WhitelistIp implements Serializable{
 	//结束IP
 	@Column(name="end_ip",nullable=false,length=20)
 	private String endIp;
-	
+
+	//创建时间
+	@Column(name="create_at",nullable = false,length = 0)
+	private Date createAt;
+
 	//更新时间
 	@Column(name="update_at",nullable=false,length=0)
 	private Date updateAt;
 	
 	//启用状态默认0为未启用，1为启用
 	@Column(name="status",nullable=false,length=4)
-	private int status;
+	private Integer status;
 	
 	//备注
 	@Column(name="remark",nullable=false,length=255)
 	private String remark;
 
-	public int getId() {
+
+
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public WhitelistIpGroup getWhitelistIpGroup() {
-		return whitelistIpGroup;
+
+	public Integer getGroupId() {
+		return groupId;
 	}
 
-	public void setWhitelistIpGroup(WhitelistIpGroup whitelistIpGroup) {
-		this.whitelistIpGroup = whitelistIpGroup;
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
 	}
-
-
 
 	public String getStartIp() {
 		return startIp;
@@ -96,11 +102,11 @@ public class WhitelistIp implements Serializable{
 		this.updateAt = updateAt;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
@@ -111,7 +117,12 @@ public class WhitelistIp implements Serializable{
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	
-	
-	
+
+	public Date getCreateAt() {
+		return createAt;
+	}
+
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
+	}
 }

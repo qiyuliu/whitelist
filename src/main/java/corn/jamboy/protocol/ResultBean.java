@@ -34,12 +34,20 @@ public class ResultBean<T> implements Serializable{
 		
 	}
 	
+	
+	
 
 	public ResultBean(Integer status , String code) {
 		this.code = code;
 		this.state = status;
 	}
 	
+	public ResultBean(String code,String message) {
+		
+		this.message = message;
+		this.code = code;
+
+	}
 
 	public ResultBean( Integer state, String code,String message) {
 		
@@ -97,7 +105,7 @@ public class ResultBean<T> implements Serializable{
 		return "ResultBean [message=" + message + ", code=" + code + ", state="
 				+ state + ", obj=" + obj + "]";
 	}
-
+	
 
 	public ResultBean(String message, String code, Integer state, T obj) {
 		
@@ -107,6 +115,10 @@ public class ResultBean<T> implements Serializable{
 		this.obj = obj;
 	}
 
+	
+	
+	
+	
 	public String toJsonStr(){
 		return "{\"code\":\""+this.code+"\",\"state\":"+this.state+",\"message\":\""+this.message+"\"}";
 	}
