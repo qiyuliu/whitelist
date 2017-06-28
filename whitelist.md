@@ -13,9 +13,11 @@
 
 ```json
 {
-  "message": "已完成创建",
-  "code": "10000",
-  "obj": []
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "已完成更新"
+  }
 }
 ```
 
@@ -23,8 +25,11 @@
 
 ```json
 {
-  "message": "ID不存在",
-  "code": "10001"
+  "code": 0,
+  "obj": {
+    "result": false,
+    "reason": "删除失败：ID不存在"
+  }
 }
 ```
 
@@ -94,8 +99,11 @@ http://${admin_api_url}/admin/v1/whitelist/group/create?name=&status=
 
 ```shell
 {
-  "message": "已完成创建",
-  "code": "10000",
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "已完成创建"
+  }
 }
 ```
 #### 查询单个白名单分组:`/admin/v1/whitelist/group/{id}/status`
@@ -169,8 +177,11 @@ curl -X DELETE \
 
 ```shell
 {
-  "message": "已完成删除",
-  "code": "10000",
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "已完成删除"
+  }
 }
 ```
 
@@ -192,8 +203,11 @@ curl -X PUT \
 
 ```shell
 {
-  "message": "已完成更新",
-  "code": "10000"
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "已完成更新"
+  }
 }
 ```
 
@@ -262,8 +276,11 @@ curl -X DELETE \
 
 ```shell
 {
-  "message": "已完成创建",
-  "code": "10000"
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "已完成创建"
+  }
 }
 ```
 
@@ -285,8 +302,11 @@ curl -X DELETE \
 
 ```shell
 {
-  "message": "已完成删除",
-  "code": "10000"
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "已完成删除"
+  }
 }
 ```
 
@@ -308,8 +328,11 @@ http://${admin_api_url}/admin/v1/whitelist/ip/?id=&startIp=&stauts=&endIp=&group
 
 ```shell
 {
-  "message": "已完成更新",
-  "code": "10000"
+  "code": 1,
+  "obj": {
+    "result": true,
+    "reason": "已完成更新"
+  }
 }
 ```
 
