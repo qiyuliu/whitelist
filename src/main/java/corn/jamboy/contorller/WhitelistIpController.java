@@ -7,6 +7,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import corn.jamboy.constants.ResultConstants;
 import corn.jamboy.entity.WhitelistIp;
 import corn.jamboy.entity.WhitelistIpGroup;
@@ -47,7 +50,7 @@ public class WhitelistIpController {
 	
 	
 	/*
-	 * 创建白名单 verify
+	 * 创建白名单 
 	 * 
 	 */
 	@RequestMapping(value="/",method=RequestMethod.POST)
@@ -70,7 +73,7 @@ public class WhitelistIpController {
 			
 			whitelistIp.setStartIp(startIp);
 			//endIp(可选) - 为空时，和startId一致
-			if(endIp == null){
+			if(endIp.equals("")){
 				whitelistIp.setEndIp(startIp);
 			}else {
 				whitelistIp.setEndIp(endIp);
@@ -89,7 +92,7 @@ public class WhitelistIpController {
 	} 
 	
 	/*
-	 * 删除白名单 verify
+	 * 删除白名单 
 	 */
 	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
 	public WhiteListResultBean deleteList(@PathVariable(name = "id") Integer id){
@@ -114,36 +117,41 @@ public class WhitelistIpController {
 	}
 	
 	/*
-	 * 更新白名单 verify
+	 * 更新白名单
 	 */
 	@RequestMapping(value="/",method=RequestMethod.PUT)
 	public WhiteListResultBean updateList(	@RequestParam(name = "id") Integer id,
-										@RequestParam(name = "startIp") String startIp,
-										@RequestParam(name = "status") Integer status,
+										@RequestParam(name = "startIp",required = false) String startIp,
+										@RequestParam(name = "status",required = false) Integer status,
 										@RequestParam(name = "endIp",required = false) String endIp,
 										@RequestParam(name = "groupId",required = false) Integer groupId,
-										@RequestParam(name = "remark") String remark
+										@RequestParam(name = "remark",required = false) String remark
 			
 			){
 		logger.info("更新白名单 ID:"+id);
 		try {
 
 			WhitelistIp whitelistIp = whitelistIpService.getEntity(id);
+			if(!startIp.equals("")){
+				whitelistIp.setStartIp(startIp);
+			}
 			
-			if(groupId == null){
-				whitelistIp.setGroupId(0);
-			}else {
-				whitelistIp.setGroupId(groupId);
-			}		
-			if(endIp == null){
-				whitelistIp.setEndIp("");
-			}else {
+			if(status != null){
+				whitelistIp.setStatus(status);
+			}
+			
+			if(!endIp.equals("")){
 				whitelistIp.setEndIp(endIp);
 			}
 			
-			whitelistIp.setStartIp(startIp);
-			whitelistIp.setStatus(status);
-			whitelistIp.setRemark(remark);
+			if(groupId != null){
+				whitelistIp.setGroupId(groupId);
+			}
+			
+			if(!remark.equals("")){
+				whitelistIp.setRemark(remark);
+			}
+			
 			whitelistIp.setUpdateAt(new Date());
 
 			whitelistIpService.modifyEntity(whitelistIp);
@@ -166,78 +174,11 @@ public class WhitelistIpController {
 		logger.info("查询所有白名单 ID");
 		try {
 
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();   
 			List<WhitelistIp> ipList = whitelistIpService.getAll();
-			
-			WhitelistIp whitelistIp = null;
-			StringBuffer sb = new StringBuffer("[");
-			for(int i = 0; i < ipList.size(); i++)  
-	        { 
-				whitelistIp = ipList.get(i);   
-				if(i<ipList.size()-1){
+			String listStr = gson.toJson(ipList);
 
-					
-					sb.append("{\"id\":\"");  
-					sb.append(whitelistIp.getId());
-					
-					sb.append("\",\"Group\":\"");  
-					sb.append(whitelistIp.getGroupId());
-
-					sb.append("\",\"startIp\":\"");  
-					sb.append(whitelistIp.getStartIp());
-					
-					sb.append("\",\"createAt\":\"");  
-					sb.append(whitelistIp.getCreateAt());
-					
-					sb.append("\",\"endIp\":\"");  
-					sb.append(whitelistIp.getStatus());
-					
-					sb.append("\",\"updateAt\":\"");  
-					sb.append(whitelistIp.getUpdateAt());
-					
-					sb.append("\",\"status\":\"");  
-					sb.append(whitelistIp.getStatus());
-					
-					sb.append("\",\"remark\":\"");  
-					sb.append(whitelistIp.getRemark());
-	                sb.append("\"");  
-	                sb.append("},"); 
-				}
-				
-                
-                if(i==ipList.size()-1){
-					sb.append("{\"id\":\"");  
-					sb.append(whitelistIp.getId());
-					
-					sb.append("\",\"Group\":\"");  
-					sb.append(whitelistIp.getGroupId());
-
-					sb.append("\",\"startIp\":\"");  
-					sb.append(whitelistIp.getStartIp());
-					
-					sb.append("\",\"createAt\":\"");  
-					sb.append(whitelistIp.getCreateAt());
-					
-					sb.append("\",\"endIp\":\"");  
-					sb.append(whitelistIp.getStatus());
-					
-					sb.append("\",\"updateAt\":\"");  
-					sb.append(whitelistIp.getUpdateAt());
-					
-					sb.append("\",\"status\":\"");  
-					sb.append(whitelistIp.getStatus());
-					
-					sb.append("\",\"remark\":\"");  
-					sb.append(whitelistIp.getRemark());
-	                sb.append("\"");  
-	                sb.append("}"); 
-                }
-	        } 
-			sb.append("]");
-			String str = sb.toString();
-
-
-			return str;
-
+			return listStr;
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		}

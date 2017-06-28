@@ -21,6 +21,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 
 /*
  * 白名单分组
@@ -77,55 +80,10 @@ public class WhitelistIpGroupController {
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public String searchTable(){
 		logger.info("查询白名单分组列表");
-		
 		try {
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); 
 			List<WhitelistIpGroup> table =whitelistIpGroupService.getAll();
-			StringBuffer sb = new StringBuffer("[");
-			WhitelistIpGroup whitelistIpGroup = null;
-			for(int i= 0; i<table.size();i++){
-				whitelistIpGroup = table.get(i);
-				if(i<table.size()-1){
-					sb.append("{\"id\":\"");  
-					sb.append(whitelistIpGroup.getId());
-					
-					sb.append("\",\"name\":\""); 
-					sb.append(whitelistIpGroup.getName());
-					
-					sb.append("\",\"status\":\"");  
-					sb.append(whitelistIpGroup.getStatus());
-					
-					sb.append("\",\"createAt\":\"");  
-					sb.append(whitelistIpGroup.getCreateAt());
-					
-					sb.append("\",\"updateAt\":\"");  
-					sb.append(whitelistIpGroup.getUpdateAt());
-					
-					sb.append("\"");  
-		            sb.append("},"); 
-				}
-				if(i==table.size()-1){
-					sb.append("{\"id\":\"");  
-					sb.append(whitelistIpGroup.getId());
-					
-					sb.append("\",\"name\":\""); 
-					sb.append(whitelistIpGroup.getName());
-					
-					sb.append("\",\"status\":\"");  
-					sb.append(whitelistIpGroup.getStatus());
-					
-					
-					sb.append("\",\"createAt\":\"");  
-					sb.append(whitelistIpGroup.getCreateAt());
-					
-					sb.append("\",\"updateAt\":\"");  
-					sb.append(whitelistIpGroup.getUpdateAt());
-					
-					sb.append("\"");  
-		            sb.append("}"); 
-				}
-			}
-			sb.append("]");
-			String str = sb.toString();
+			String str = gson.toJson(table);
 			return str;
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
@@ -144,7 +102,6 @@ public class WhitelistIpGroupController {
 			WhitelistIpGroup  whitelistIpGroup = whitelistIpGroupService.getEntity(id);
 			
 			if(whitelistIpGroup == null){ 
-				//throw new RuntimeException("ID: "+id + " 不存在");
 				return new WhiteListResultBean(0, new WhiteListResultBean.Obj(false, "删除失败：ID不存在"));
 			}else{
 				whitelistIpGroupService.removeEntity(whitelistIpGroup);
@@ -200,28 +157,9 @@ public class WhitelistIpGroupController {
 	public String searchGroup(@PathVariable(name = "id") Integer id){
 		logger.info("查询 ID:"+id + "分组信息");
 		try {
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); 
 			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(id);
-			StringBuffer sb = new StringBuffer();
-			
-			sb.append("{\"id\":\"");  
-			sb.append(whitelistIpGroup.getId());
-			
-			sb.append("\",\"name\":\"");  
-			sb.append(whitelistIpGroup.getName());
-
-			sb.append("\",\"status\":\"");  
-			sb.append(whitelistIpGroup.getStatus());
-			
-			sb.append("\",\"createAt\":\"");  
-			sb.append(whitelistIpGroup.getCreateAt());
-					
-			sb.append("\",\"updateAt\":\"");  
-			sb.append(whitelistIpGroup.getUpdateAt());
-			
-            sb.append("\"");  
-            sb.append("}"); 
-            
-			String str = sb.toString();
+			String str = gson.toJson(whitelistIpGroup);
 			return str;
 		
 		} catch (Exception e) {
@@ -230,88 +168,23 @@ public class WhitelistIpGroupController {
 	}
 	
 	/*
-	 * 查询分组下白名单 verify
+	 * 查询指定分组下白名单 
 	 */
 	@RequestMapping(value="/{id}/ip_list",method=RequestMethod.GET)
 	public String searchList(@PathVariable(name = "id") Integer id){
 		logger.info("查询 ID:"+id + "分组下白名单");
 		try {
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();   
 			List<WhitelistIp> ipList = whitelistIpService.getAll();
-			
-			WhitelistIp whitelistIp = null;
-			StringBuffer sb = new StringBuffer("[");
-			for(int i = 0; i < ipList.size(); i++)  
-	        { 
-				whitelistIp = ipList.get(i);
-				
-				if(whitelistIp.getGroupId() == id){
-					if(i<ipList.size()-1){
-
-						
-						sb.append("{\"id\":\"");  
-						sb.append(whitelistIp.getId());
-						
-						sb.append("\",\"Group\":\"");  
-						sb.append(whitelistIp.getGroupId());
-
-						sb.append("\",\"startIp\":\"");  
-						sb.append(whitelistIp.getStartIp());
-						
-						sb.append("\",\"createAt\":\"");  
-						sb.append(whitelistIp.getCreateAt());
-						
-						sb.append("\",\"endIp\":\"");  
-						sb.append(whitelistIp.getStatus());
-						
-						sb.append("\",\"updateAt\":\"");  
-						sb.append(whitelistIp.getUpdateAt());
-						
-						sb.append("\",\"status\":\"");  
-						sb.append(whitelistIp.getStatus());
-						
-						sb.append("\",\"remark\":\"");  
-						sb.append(whitelistIp.getRemark());
-		                sb.append("\"");  
-		                sb.append("},"); 
-					}
-					
-	                
-	                if(i==ipList.size()-1){
-						sb.append("{\"id\":\"");  
-						sb.append(whitelistIp.getId());
-						
-						sb.append("\",\"Group\":\"");  
-						sb.append(whitelistIp.getGroupId());
-
-						sb.append("\",\"startIp\":\"");  
-						sb.append(whitelistIp.getStartIp());
-						
-						sb.append("\",\"createAt\":\"");  
-						sb.append(whitelistIp.getCreateAt());
-						
-						sb.append("\",\"endIp\":\"");  
-						sb.append(whitelistIp.getStatus());
-						
-						sb.append("\",\"updateAt\":\"");  
-						sb.append(whitelistIp.getUpdateAt());
-						
-						sb.append("\",\"status\":\"");  
-						sb.append(whitelistIp.getStatus());
-						
-						sb.append("\",\"remark\":\"");  
-						sb.append(whitelistIp.getRemark());
-		                sb.append("\"");  
-		                sb.append("}"); 
-	                }
+			List<WhitelistIp> List = new ArrayList<>();
+			for(int i = 0; i < ipList.size(); i++){
+				WhitelistIp ip = ipList.get(i);
+				if(ip.getGroupId() == id){
+					List.add(ip);
 				}
-				
-	        } 
-			sb.deleteCharAt(sb.length()-1);
-			sb.append("]");
-			String str = sb.toString();
-
-
-			return str;
+			}  
+			String listStr = gson.toJson(List);
+			return listStr;
 	        } catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		}
