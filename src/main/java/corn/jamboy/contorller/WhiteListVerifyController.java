@@ -20,7 +20,7 @@ import corn.jamboy.service.impl.WhitelistIpServiceImp;
  */
 @CrossOrigin
 @RestController
-@RequestMapping(value="/admin/v1/whitelist/verify")
+@RequestMapping(value="/admin/v1/whitelist/verify",method=RequestMethod.GET)
 public class WhiteListVerifyController {
 
 	@RequestMapping("/test")

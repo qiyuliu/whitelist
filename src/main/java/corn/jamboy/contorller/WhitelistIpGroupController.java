@@ -116,7 +116,7 @@ public class WhitelistIpGroupController {
 	}
 	
 	/*
-	 * 更新白名单分组 verify
+	 * 更新白名单分组
 	 */
 	@RequestMapping(value="/",method=RequestMethod.PUT)
 	public WhiteListResultBean updateList(@RequestParam(name = "id") Integer id,
