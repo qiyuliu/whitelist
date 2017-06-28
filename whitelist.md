@@ -7,7 +7,7 @@
 | v1   | 2017.6.24 初始化 |
 |      |               |
 
-对于所有的请求，响应格式都是一个 JSON 对象。请求是否成功是由 HTTP 状态码标明，2XX 的状态码表示成功，而一个 4XX 表示请求失败。请求失败时响应的主体仍然是一个 JSON 对象，但是总是会包含 `code` ,`message` ,`state`这三个字段。
+对于所有的请求，响应格式都是一个 JSON 对象。请求是否成功是由 HTTP 状态码标明，2XX 的状态码表示成功，而一个 4XX 表示请求失败。请求失败时响应的主体仍然是一个 JSON 对象，但是总是会包含 `code` ,`result` ,`reason`这三个字段。
 
 😄 成功消息
 
@@ -32,11 +32,11 @@
   }
 }
 ```
+* code:消息码.成功返回1，失败返回0.
+* obj：验证信息
+* result：验证结果.验证成功返回true，失败返回false.
+* reason：验证结果详细说明
 
-* code - 消息码，10,000 表示没有错误
-* message - 可选的，错误消息
-* state - 状态码，0表示正常
-* obj - 业务数据，可以是 `{}` 或 `[]`
 
 API
 ------
@@ -70,12 +70,6 @@ http://${admin_api_url}/admin/v1/whitelist/verify/?areaId=&accountId=&clientIp=
   }
 }
 ```
-* code:消息码.成功返回1，失败返回0.
-* obj：验证信息
-* result：验证结果.验证成功返回true，失败返回false.
-* reason：验证结果详细说明
-
-
 
 #### 创建白名单分组:`/admin/v1/whitelist/group/create`
 
@@ -220,7 +214,7 @@ curl -X PUT \
 
 curl -X GET \
 
-  http://${admin_api_url}/admin/v1/whitelist/group/${group_id}
+  http://${admin_api_url}/admin/v1/whitelist/group/{id}/ip_list
   
  
 ```
@@ -259,7 +253,7 @@ curl -X GET \
 请求
 ```shell
 
-curl -X DELETE \
+curl -X POST \
 
   http://${admin_api_url}/admin/v1/whitelist/ip/?groupId=&startIp=&status=&endIp=&remark=
   
@@ -317,9 +311,9 @@ curl -X DELETE \
 请求
 ```shell
 
-curl -X DELETE \
+curl -X GET \
 
-http://${admin_api_url}/admin/v1/whitelist/ip/?id=&startIp=&stauts=&endIp=&groupId=&remark=
+http://${admin_api_url}/admin/v1/whitelist/ip/?id=&startIp=&status=&endIp=&groupId=&remark=
  
 
 ```
