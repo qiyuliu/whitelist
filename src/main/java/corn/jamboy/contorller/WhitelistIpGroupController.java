@@ -6,25 +6,20 @@ import java.util.Date;
 import java.util.List;
 
 import corn.jamboy.constants.ResultConstants;
+import corn.jamboy.contorller.WhiteListVerifyController.WhiteList;
 import corn.jamboy.entity.WhitelistIp;
 import corn.jamboy.entity.WhitelistIpGroup;
 import corn.jamboy.form.UpdateGroupForm;
 import corn.jamboy.form.WhitelistGroupForm;
 import corn.jamboy.protocol.ResultBean;
+import corn.jamboy.protocol.WhiteListResultBean;
 import corn.jamboy.service.WhitelistIpGroupService;
 import corn.jamboy.service.impl.WhitelistIpGroupServiceImp;
 import corn.jamboy.service.impl.WhitelistIpServiceImp;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
+import org.springframework.web.bind.annotation.*;
 
 
 /*
@@ -53,8 +48,9 @@ public class WhitelistIpGroupController {
 	/*
 	 * 创建白名单分组
 	 */
+	@CrossOrigin
 	@RequestMapping(value="/create",method=RequestMethod.POST)
-	public ResultBean createList(@RequestParam(name = "name") String name,
+	public WhiteListResultBean createList(@RequestParam(name = "name") String name,
 			@RequestParam(name = "status") Integer status){
 
 		logger.info("创建白名单分组: "+name);
@@ -66,8 +62,10 @@ public class WhitelistIpGroupController {
 			whitelistIpGroup.setCreateAt(new Date());
 			whitelistIpGroup.setUpdateAt(new Date());
 
-			whitelistIpGroupService.saveEntity(whitelistIpGroup);				
-			return new ResultBean("已完成创建",ResultConstants.SYS_NORMAL_CODE);
+			whitelistIpGroupService.saveEntity(whitelistIpGroup);		
+			
+			return new WhiteListResultBean(1, new WhiteListResultBean.Obj(true, "已完成创建"));
+			//return new ResultBean("已完成创建",ResultConstants.SYS_NORMAL_CODE);
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		}
@@ -139,18 +137,19 @@ public class WhitelistIpGroupController {
 	 * 删除白名单分组 
 	 */
 	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
-	public ResultBean<Void> deleteList(@PathVariable(name = "id") Integer id){
+	public WhiteListResultBean deleteList(@PathVariable(name = "id") Integer id){
 		logger.info("删除白名单分组 ID:"+id);
 		
 		try {
 			WhitelistIpGroup  whitelistIpGroup = whitelistIpGroupService.getEntity(id);
 			
 			if(whitelistIpGroup == null){ 
-				throw new RuntimeException("ID: "+id + " 不存在");
+				//throw new RuntimeException("ID: "+id + " 不存在");
+				return new WhiteListResultBean(0, new WhiteListResultBean.Obj(false, "删除失败：ID不存在"));
 			}else{
 				whitelistIpGroupService.removeEntity(whitelistIpGroup);
 			}
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成删除"); 
+			return new WhiteListResultBean(1, new WhiteListResultBean.Obj(true, "已完成删除"));
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
@@ -163,7 +162,7 @@ public class WhitelistIpGroupController {
 	 * 更新白名单分组 verify
 	 */
 	@RequestMapping(value="/",method=RequestMethod.PUT)
-	public ResultBean<Void> updateList(@RequestParam(name = "id") Integer id,
+	public WhiteListResultBean updateList(@RequestParam(name = "id") Integer id,
 									@RequestParam(name = "name") String name,
 									@RequestParam(name = "status") Integer status){
 		logger.info("更新白名单分组 ID:");
@@ -185,7 +184,7 @@ public class WhitelistIpGroupController {
 
 			whitelistIpGroupService.saveEntity(whitelistIpGroup);				
 			
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成更新"); 
+			return new WhiteListResultBean(1, new WhiteListResultBean.Obj(true, "已完成更新"));
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);

@@ -4,11 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import corn.jamboy.entity.AreaInfo;
 import corn.jamboy.entity.WhitelistIp;
@@ -22,6 +18,7 @@ import corn.jamboy.service.impl.WhitelistIpServiceImp;
  * @author qiyuliu
  *
  */
+@CrossOrigin
 @RestController
 @RequestMapping(value="/admin/v1/whitelist/verify")
 public class WhiteListVerifyController {
@@ -75,12 +72,12 @@ public class WhiteListVerifyController {
 					//是否在开始IP和结束IP之间
 					if(Double.valueOf(start = list.getStartIp().replaceAll("\\.", "")) <= Double.valueOf(ip = clientIp.replaceAll("\\.", "")) && Double.valueOf(ip = clientIp.replaceAll("\\.", "")) <= Double.valueOf(end = list.getEndIp().replaceAll("\\.", ""))){
 						
-						for(WhitelistIpGroup list2 : groupList){
+						for(WhitelistIpGroup grouplist : groupList){
 							//找出所在分组
-							if(list2.getId() == list.getGroupId() || list.getGroupId() == 0 ){
+							if(grouplist.getId() == list.getGroupId() || list.getGroupId() == 0 ){
 								//所在IP分组是否开启白名单
-								if(list2.getStatus() == 1){
-									res = new WhiteList.Response(0,new WhiteList.Response.Obj(true, "白名单IP验证成功"));
+								if(grouplist.getStatus() == 1){
+									res = new WhiteList.Response(1,new WhiteList.Response.Obj(true, "白名单IP验证成功"));
 									break outer;
 								}
 							}else{

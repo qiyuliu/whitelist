@@ -5,12 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import corn.jamboy.constants.ResultConstants;
 import corn.jamboy.entity.WhitelistIp;
@@ -18,6 +13,7 @@ import corn.jamboy.entity.WhitelistIpGroup;
 import corn.jamboy.form.UpdateIpForm;
 import corn.jamboy.form.WhitelistIpForm;
 import corn.jamboy.protocol.ResultBean;
+import corn.jamboy.protocol.WhiteListResultBean;
 import corn.jamboy.service.impl.WhitelistIpGroupServiceImp;
 import corn.jamboy.service.impl.WhitelistIpServiceImp;
 
@@ -29,6 +25,7 @@ import corn.jamboy.service.impl.WhitelistIpServiceImp;
  * 白名单管理
  * 
  */
+@CrossOrigin
 @RestController
 @RequestMapping(value="/admin/v1/whitelist/ip")
 public class WhitelistIpController {
@@ -54,7 +51,7 @@ public class WhitelistIpController {
 	 * 
 	 */
 	@RequestMapping(value="/",method=RequestMethod.POST)
-	public ResultBean<Void> createList(@RequestParam(name="groupId",required = false) Integer groupId,
+	public WhiteListResultBean createList(@RequestParam(name="groupId",required = false) Integer groupId,
 									@RequestParam(name="startIp") String startIp,
 									@RequestParam(name="endIp",required = false) String endIp,
 									@RequestParam(name="status") Integer status,
@@ -85,7 +82,7 @@ public class WhitelistIpController {
 			whitelistIp.setRemark(remark);
 			
 			whitelistIpService.saveEntity(whitelistIp);
-			return new ResultBean<>(ResultConstants.SYS_NORMAL_CODE,"已完成创建"); 
+			return new WhiteListResultBean(1, new WhiteListResultBean.Obj(true, "已完成创建"));
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
 		} 
@@ -95,18 +92,19 @@ public class WhitelistIpController {
 	 * 删除白名单 verify
 	 */
 	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
-	public ResultBean<Void> deleteList(@PathVariable(name = "id") Integer id){
+	public WhiteListResultBean deleteList(@PathVariable(name = "id") Integer id){
 		logger.info("删除白名单 ID:"+id);
 		
 		try {
 			WhitelistIp whitelistIp = whitelistIpService.getEntity(id);
 			
 			if(whitelistIp == null){ 
-				throw new RuntimeException("ID: "+id + " 不存在");
+				//throw new RuntimeException("ID: "+id + " 不存在");
+				return new WhiteListResultBean(0, new WhiteListResultBean.Obj(false, "删除失败：ID不存在"));
 			}else{
 				whitelistIpService.removeEntity(whitelistIp);
 			}
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成删除"); 
+			return new WhiteListResultBean(1, new WhiteListResultBean.Obj(true, "已完成删除"));
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);
@@ -119,7 +117,7 @@ public class WhitelistIpController {
 	 * 更新白名单 verify
 	 */
 	@RequestMapping(value="/",method=RequestMethod.PUT)
-	public ResultBean<Void> updateList(	@RequestParam(name = "id") Integer id,
+	public WhiteListResultBean updateList(	@RequestParam(name = "id") Integer id,
 										@RequestParam(name = "startIp") String startIp,
 										@RequestParam(name = "status") Integer status,
 										@RequestParam(name = "endIp",required = false) String endIp,
@@ -150,7 +148,7 @@ public class WhitelistIpController {
 
 			whitelistIpService.modifyEntity(whitelistIp);
 			
-			return new ResultBean<>(ResultConstants.STATE_NORMAL, ResultConstants.SYS_NORMAL_CODE,"已完成更新"); 
+			return new WhiteListResultBean(1, new WhiteListResultBean.Obj(true, "已完成更新"));
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage(),e);

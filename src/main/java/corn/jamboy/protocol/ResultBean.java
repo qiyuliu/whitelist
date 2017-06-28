@@ -37,7 +37,7 @@ public class ResultBean<T> implements Serializable{
 	
 	
 
-	public ResultBean(Integer status , String code) {
+public ResultBean(Integer status , String code) {
 		this.code = code;
 		this.state = status;
 	}
