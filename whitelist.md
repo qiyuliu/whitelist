@@ -49,7 +49,7 @@ API
 
 ```shell
 
-curl -X POST \
+curl -X GET \
 
 http://${admin_api_url}/admin/v1/whitelist/verify/?areaId=&accountId=&clientIp=
 
@@ -311,7 +311,7 @@ curl -X DELETE \
 请求
 ```shell
 
-curl -X GET \
+curl -X PUT \
 
 http://${admin_api_url}/admin/v1/whitelist/ip/?id=&startIp=&status=&endIp=&groupId=&remark=
  
