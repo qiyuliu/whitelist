@@ -61,10 +61,11 @@ public class WhiteListVerifyController {
 		String start,end,ip;
 		//区服是否开启白名单
 		if(flag){
-			
+			//获取分组
 			List<WhitelistIpGroup> groupList = whitelistIpGroupService.getAll();
 			//获取全部IP
-			List<WhitelistIp> ipList = whitelistIpService.getAll();
+			List<WhitelistIp> ipList = whitelistIpService.getAll();		
+			
 			outer:
 			for(WhitelistIp list : ipList){
 				//IP状态为开启
@@ -86,7 +87,7 @@ public class WhiteListVerifyController {
 							}
 						}
 					}else{
-						res = new WhiteList.Response(0,new WhiteList.Response.Obj(false, "白名单IP验证失败：IP白名单不在开始IP和结束IP之间"));
+						res = new WhiteList.Response(0,new WhiteList.Response.Obj(false, "白名单IP验证失败：IP白名单未开启"));
 					}
 				}else{
 					res = new WhiteList.Response(0,new WhiteList.Response.Obj(false, "白名单IP验证失败：IP白名单未开启"));		
