@@ -2,7 +2,8 @@ package corn.jamboy.contorller;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,7 @@ public class WhiteListVerifyController {
 	@Autowired
 	private AreaInfoServiceImp areaInfoServiceImp;
 	
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	/*
 	 * 白名单验证

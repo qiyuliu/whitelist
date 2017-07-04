@@ -7,6 +7,7 @@ import corn.jamboy.dao.WhitelistIpGroupDao;
 import corn.jamboy.entity.WhitelistIpGroup;
 import corn.jamboy.service.WhitelistIpGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 

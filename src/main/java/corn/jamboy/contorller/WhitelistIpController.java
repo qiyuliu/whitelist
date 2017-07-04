@@ -3,7 +3,8 @@ package corn.jamboy.contorller;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ public class WhitelistIpController {
 		return "test";
 	}
 	
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private WhitelistIpServiceImp whitelistIpService; 
@@ -57,10 +58,10 @@ public class WhitelistIpController {
 	public WhiteListResultBean createList(@RequestParam(name="groupId",required = false) Integer groupId,
 									@RequestParam(name="startIp") String startIp,
 									@RequestParam(name="endIp",required = false) String endIp,
-									@RequestParam(name="status") Integer status,
-									@RequestParam(name="remark") String remark			
+									@RequestParam(name="status",required = false) Integer status,
+									@RequestParam(name="remark",required = false) String remark			
 			){	
-		logger.info("创建白名单 ID");
+		logger.info("create whiteList ID:");
 		try {
 			
 			WhitelistIp whitelistIp = new WhitelistIp();			
@@ -78,11 +79,21 @@ public class WhitelistIpController {
 			}else {
 				whitelistIp.setEndIp(endIp);
 			}
+			if(status==null){
+				whitelistIp.setStatus(1);
+			}else{
+				whitelistIp.setStatus(status);
+			}
+			if(status==null){
+				whitelistIp.setRemark("");
+			}else{
+				whitelistIp.setRemark(remark);
+			}
 			
 			whitelistIp.setCreateAt(new Date());
 			whitelistIp.setUpdateAt(new Date());
-			whitelistIp.setStatus(status);
-			whitelistIp.setRemark(remark);
+			
+		
 			
 			whitelistIpService.saveEntity(whitelistIp);
 			return new WhiteListResultBean(1, new WhiteListResultBean.Obj(true, "已完成创建"));
@@ -96,7 +107,7 @@ public class WhitelistIpController {
 	 */
 	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
 	public WhiteListResultBean deleteList(@PathVariable(name = "id") Integer id){
-		logger.info("删除白名单 ID:"+id);
+		logger.info("delete whiteList ID:"+id);
 		
 		try {
 			WhitelistIp whitelistIp = whitelistIpService.getEntity(id);
@@ -128,7 +139,7 @@ public class WhitelistIpController {
 										@RequestParam(name = "remark",required = false) String remark
 			
 			){
-		logger.info("更新白名单 ID:"+id);
+		logger.info("update whiteList ID:"+id);
 		try {
 
 			WhitelistIp whitelistIp = whitelistIpService.getEntity(id);
@@ -143,6 +154,10 @@ public class WhitelistIpController {
 			if(!endIp.equals("")){
 				whitelistIp.setEndIp(endIp);
 			}
+			if(endIp.equals("")){
+				whitelistIp.setEndIp(startIp);
+			}
+			
 			
 			if(groupId != null){
 				whitelistIp.setGroupId(groupId);
@@ -171,10 +186,10 @@ public class WhitelistIpController {
 	 */
 	@RequestMapping(value="/all",method=RequestMethod.GET)
 	public String searchList(){
-		logger.info("查询所有白名单 ID");
+		logger.info("search all whitelist ID");
 		try {
 
-			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();   
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();   
 			List<WhitelistIp> ipList = whitelistIpService.getAll();
 			String listStr = gson.toJson(ipList);
 

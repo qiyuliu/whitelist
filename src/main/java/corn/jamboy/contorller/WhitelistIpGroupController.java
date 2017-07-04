@@ -17,7 +17,8 @@ import corn.jamboy.service.WhitelistIpGroupService;
 import corn.jamboy.service.impl.WhitelistIpGroupServiceImp;
 import corn.jamboy.service.impl.WhitelistIpServiceImp;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ public class WhitelistIpGroupController {
 	}
 	
 	
-	private Logger logger = Logger.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private WhitelistIpGroupServiceImp whitelistIpGroupService;
@@ -56,7 +57,7 @@ public class WhitelistIpGroupController {
 	public WhiteListResultBean createList(@RequestParam(name = "name") String name,
 			@RequestParam(name = "status") Integer status){
 
-		logger.info("创建白名单分组: "+name);
+		logger.info("create whitelist group: "+name);
 		try{
 			
 			WhitelistIpGroup whitelistIpGroup = new WhitelistIpGroup();
@@ -79,7 +80,7 @@ public class WhitelistIpGroupController {
 	 */
 	@RequestMapping(value="/",method=RequestMethod.GET)
 	public String searchTable(){
-		logger.info("查询白名单分组列表");
+		logger.info("search whitelist group Table");
 		try {
 			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); 
 			List<WhitelistIpGroup> table =whitelistIpGroupService.getAll();
@@ -96,7 +97,7 @@ public class WhitelistIpGroupController {
 	 */
 	@RequestMapping(value="/{id}",method=RequestMethod.DELETE)
 	public WhiteListResultBean deleteList(@PathVariable(name = "id") Integer id){
-		logger.info("删除白名单分组 ID:"+id);
+		logger.info("delete whitelist group ID:"+id);
 		
 		try {
 			WhitelistIpGroup  whitelistIpGroup = whitelistIpGroupService.getEntity(id);
@@ -122,7 +123,7 @@ public class WhitelistIpGroupController {
 	public WhiteListResultBean updateList(@RequestParam(name = "id") Integer id,
 									@RequestParam(name = "name") String name,
 									@RequestParam(name = "status") Integer status){
-		logger.info("更新白名单分组 ID:");
+		logger.info("update whitelist group ID:");
 		try {
 			
 			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(id);
@@ -155,9 +156,9 @@ public class WhitelistIpGroupController {
 	 */
 	@RequestMapping(value="/{id}/status",method=RequestMethod.GET)
 	public String searchGroup(@PathVariable(name = "id") Integer id){
-		logger.info("查询 ID:"+id + "分组信息");
+		logger.info("search whitelist group ID:"+id);
 		try {
-			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create(); 
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create(); 
 			WhitelistIpGroup whitelistIpGroup = whitelistIpGroupService.getEntity(id);
 			String str = gson.toJson(whitelistIpGroup);
 			return str;
@@ -170,11 +171,11 @@ public class WhitelistIpGroupController {
 	/*
 	 * 查询指定分组下白名单 
 	 */
-	@RequestMapping(value="/{id}/ip_list",method=RequestMethod.GET)
+	@RequestMapping(value="/{id}/ip_list",method=RequestMethod.GET)	
 	public String searchList(@PathVariable(name = "id") Integer id){
-		logger.info("查询 ID:"+id + "分组下白名单");
+		logger.info("search whitelist group ID:" + id + "contained whitelist ID:");
 		try {
-			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();   
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();   
 			List<WhitelistIp> ipList = whitelistIpService.getAll();
 			List<WhitelistIp> List = new ArrayList<>();
 			for(int i = 0; i < ipList.size(); i++){
